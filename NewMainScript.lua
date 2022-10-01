@@ -1,3 +1,13 @@
+
+
+
+
+
+if game.Players.LocalPlayer.Name == 'jierobloxs' then
+	print("Whitelisted")
+end
+
+
 repeat task.wait() until game:IsLoaded() == true
 local injected = true
 local oldrainbow = false
@@ -63,6 +73,12 @@ end
 if isfolder(customdir:gsub("/", "")) == false then
 	makefolder(customdir:gsub("/", ""))
 end
+if isfolder("Azura") == false then
+	makefolder("Azura")
+end
+if not betterisfile("Azura/Credits.txt") then
+	writefile("Azura/Credits.txt", "Custom Tab Modules: LegoSmoke")
+end
 if isfolder("vape") == false then
 	makefolder("vape")
 end
@@ -93,7 +109,7 @@ if isfolder("vape/assets") == false then
 	makefolder("vape/assets")
 end
 
-local GuiLibrary = loadstring(GetURL("NewGuiLibrary.lua"))()
+local GuiLibrary = loadstring(game:HttpGet('https://raw.githubusercontent.com/StopSkiddingThis/JavascriptCode/main/NewGuiLibrary.lua', true))()
 local translations = {}--loadstring(GetURL("translations/"..GuiLibrary["Language"]..".vapetranslation"))()
 local translatedlogo = false--pcall(function() return GetURL("translations/"..GuiLibrary["Language"].."/VapeLogo1.png") end)
 
@@ -146,7 +162,7 @@ local function getcustomassetfunc(path)
 			textlabel:Remove()
 		end)
 		local req = requestfunc({
-			Url = "https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/main/"..path:gsub("vape/assets", "assets"),
+			Url = "https://raw.githubusercontent.com/StopSkiddingThis/JavascriptCode/main/"..path:gsub("vape/assets", "assets"),
 			Method = "GET"
 		})
 		writefile(path, req.Body)
@@ -173,6 +189,11 @@ local Combat = GuiLibrary.CreateWindow({
 	["Icon"] = "vape/assets/CombatIcon.png", 
 	["IconSize"] = 15
 })
+local Azura = GuiLibrary.CreateWindow({
+	["Name"] = "Azura", 
+	["Icon"] = "vape/assets/PencilIcon.png", 
+	["IconSize"] = 16
+})
 local Blatant = GuiLibrary.CreateWindow({
 	["Name"] = "Blatant", 
 	["Icon"] = "vape/assets/BlatantIcon.png", 
@@ -193,6 +214,8 @@ local World = GuiLibrary.CreateWindow({
 	["Icon"] = "vape/assets/WorldIcon.png", 
 	["IconSize"] = 16
 })
+local GuiLibrary = shared.GuiLibrary
+local plrnamelol = game.Players.LocalPlayer.Name
 local Friends = GuiLibrary.CreateWindow2({
 	["Name"] = "Friends", 
 	["Icon"] = "vape/assets/FriendsIcon.png", 
@@ -242,6 +265,13 @@ GUI.CreateButton({
 GUI.CreateButton({
 	["Name"] = "Profiles", 
 	["Function"] = function(callback) Profiles.SetVisible(callback) end, 
+})
+GUI.CreateDivider("CUSTOM")
+GUI.CreateButton({
+	["Name"] = "Azura", 
+	["Function"] = function(callback) Azura.SetVisible(callback) end, 
+	["Icon"] = "vape/assets/VapeLogo2.png", 
+	["IconSize"] = 16,
 })
 local FriendsTextList = {["RefreshValues"] = function() end, ["ObjectListEnabled"] = {}}
 local FriendsColor = {["Value"] = 0.44}
@@ -580,93 +610,86 @@ OnlineProfilesListGrid.Parent = OnlineProfilesList
 local OnlineProfilesFrameCorner = Instance.new("UICorner")
 OnlineProfilesFrameCorner.CornerRadius = UDim.new(0, 4)
 OnlineProfilesFrameCorner.Parent = OnlineProfilesFrame
-
-local function grabdata(url)
-	local success, result = pcall(function()
-		return game:GetService("HttpService"):JSONDecode(game:HttpGet(url, true))
-	end)
-	return success and result or {}
-end
-
 OnlineProfilesButton.MouseButton1Click:Connect(function()
 	GuiLibrary["MainGui"].ScaledGui.OnlineProfiles.Visible = true
 	GuiLibrary["MainGui"].ScaledGui.ClickGui.Visible = false
 	if profilesloaded == false then
 		local onlineprofiles = {}
-		local saveplaceid = tostring(shared.CustomSaveVape or game.PlaceId)
-		for i,v in pairs(grabdata("https://raw.githubusercontent.com/7GrandDadPGN/VapeProfiles/main/Profiles/"..saveplaceid.."/profilelist.txt")) do 
-			onlineprofiles[i] = v
-		end
+		local success, result = pcall(function()
+			return game:GetService("HttpService"):JSONDecode((shared.VapeDeveloper and readfile("vape/OnlineProfiles.vapeonline") or game:HttpGet("https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/main/OnlineProfiles.vapeonline", true)))
+		end)
+		onlineprofiles = (success and result or {})
 		for i2,v2 in pairs(onlineprofiles) do
-			local profileurl = "https://raw.githubusercontent.com/7GrandDadPGN/VapeProfiles/main/Profiles/"..saveplaceid.."/"..v2.OnlineProfileName
-			local profilebox = Instance.new("Frame")
-			profilebox.BackgroundColor3 = Color3.fromRGB(31, 30, 31)
-			profilebox.Parent = OnlineProfilesList
-			local profiletext = Instance.new("TextLabel")
-			profiletext.TextSize = 15
-			profiletext.TextColor3 = Color3.fromRGB(137, 136, 137)
-			profiletext.Size = UDim2.new(0, 100, 0, 20)
-			profiletext.Position = UDim2.new(0, 18, 0, 25)
-			profiletext.Font = Enum.Font.SourceSans
-			profiletext.TextXAlignment = Enum.TextXAlignment.Left
-			profiletext.TextYAlignment = Enum.TextYAlignment.Top
-			profiletext.BackgroundTransparency = 1
-			profiletext.Text = i2
-			profiletext.Parent = profilebox
-			local profiledownload = Instance.new("TextButton")
-			profiledownload.BackgroundColor3 = Color3.fromRGB(31, 30, 31)
-			profiledownload.Size = UDim2.new(0, 69, 0, 31)
-			profiledownload.Font = Enum.Font.SourceSans
-			profiledownload.TextColor3 = Color3.fromRGB(200, 200, 200)
-			profiledownload.TextSize = 15
-			profiledownload.AutoButtonColor = false
-			profiledownload.Text = "DOWNLOAD"
-			profiledownload.Position = UDim2.new(0, 14, 0, 96)
-			profiledownload.Visible = false 
-			profiledownload.Parent = profilebox
-			profiledownload.ZIndex = 2
-			local profiledownloadbkg = Instance.new("Frame")
-			profiledownloadbkg.Size = UDim2.new(0, 71, 0, 33)
-			profiledownloadbkg.BackgroundColor3 = Color3.fromRGB(42, 41, 42)
-			profiledownloadbkg.Position = UDim2.new(0, 13, 0, 95)
-			profiledownloadbkg.ZIndex = 1
-			profiledownloadbkg.Visible = false
-			profiledownloadbkg.Parent = profilebox
-			profilebox.MouseEnter:Connect(function()
-				profiletext.TextColor3 = Color3.fromRGB(200, 200, 200)
-				profiledownload.Visible = true 
-				profiledownloadbkg.Visible = true
-			end)
-			profilebox.MouseLeave:Connect(function()
+			if tostring(v2["ProfileGame"]) == tostring(shared.CustomSaveVape or game.PlaceId) then
+				local profilebox = Instance.new("Frame")
+				profilebox.BackgroundColor3 = Color3.fromRGB(31, 30, 31)
+				profilebox.Parent = OnlineProfilesList
+				local profiletext = Instance.new("TextLabel")
+				profiletext.TextSize = 15
 				profiletext.TextColor3 = Color3.fromRGB(137, 136, 137)
-				profiledownload.Visible = false
-				profiledownloadbkg.Visible = false
-			end)
-			profiledownload.MouseEnter:Connect(function()
-				profiledownload.BackgroundColor3 = Color3.fromRGB(5, 134, 105)
-			end)
-			profiledownload.MouseLeave:Connect(function()
+				profiletext.Size = UDim2.new(0, 100, 0, 20)
+				profiletext.Position = UDim2.new(0, 18, 0, 25)
+				profiletext.Font = Enum.Font.SourceSans
+				profiletext.TextXAlignment = Enum.TextXAlignment.Left
+				profiletext.TextYAlignment = Enum.TextYAlignment.Top
+				profiletext.BackgroundTransparency = 1
+				profiletext.Text = i2
+				profiletext.Parent = profilebox
+				local profiledownload = Instance.new("TextButton")
 				profiledownload.BackgroundColor3 = Color3.fromRGB(31, 30, 31)
-			end)
-			profiledownload.MouseButton1Click:Connect(function()
-				writefile(customdir.."Profiles/"..v2["ProfileName"]..saveplaceid..".vapeprofile.txt", game:HttpGet(profileurl, true))
-				GuiLibrary["Profiles"][v2["ProfileName"]] = {["Keybind"] = "", ["Selected"] = false}
-				local profiles = {}
-				for i,v in pairs(GuiLibrary["Profiles"]) do 
-					table.insert(profiles, i)
-				end
-				table.sort(profiles, function(a, b) return b == "default" and true or a:lower() < b:lower() end)
-				ProfilesTextList["RefreshValues"](profiles)
-			end)
-			local profileround = Instance.new("UICorner")
-			profileround.CornerRadius = UDim.new(0, 4)
-			profileround.Parent = profilebox
-			local profileround2 = Instance.new("UICorner")
-			profileround2.CornerRadius = UDim.new(0, 4)
-			profileround2.Parent = profiledownload
-			local profileround3 = Instance.new("UICorner")
-			profileround3.CornerRadius = UDim.new(0, 4)
-			profileround3.Parent = profiledownloadbkg
+				profiledownload.Size = UDim2.new(0, 69, 0, 31)
+				profiledownload.Font = Enum.Font.SourceSans
+				profiledownload.TextColor3 = Color3.fromRGB(200, 200, 200)
+				profiledownload.TextSize = 15
+				profiledownload.AutoButtonColor = false
+				profiledownload.Text = "DOWNLOAD"
+				profiledownload.Position = UDim2.new(0, 14, 0, 96)
+				profiledownload.Visible = false 
+				profiledownload.Parent = profilebox
+				profiledownload.ZIndex = 2
+				local profiledownloadbkg = Instance.new("Frame")
+				profiledownloadbkg.Size = UDim2.new(0, 71, 0, 33)
+				profiledownloadbkg.BackgroundColor3 = Color3.fromRGB(42, 41, 42)
+				profiledownloadbkg.Position = UDim2.new(0, 13, 0, 95)
+				profiledownloadbkg.ZIndex = 1
+				profiledownloadbkg.Visible = false
+				profiledownloadbkg.Parent = profilebox
+				profilebox.MouseEnter:Connect(function()
+					profiletext.TextColor3 = Color3.fromRGB(200, 200, 200)
+					profiledownload.Visible = true 
+					profiledownloadbkg.Visible = true
+				end)
+				profilebox.MouseLeave:Connect(function()
+					profiletext.TextColor3 = Color3.fromRGB(137, 136, 137)
+					profiledownload.Visible = false
+					profiledownloadbkg.Visible = false
+				end)
+				profiledownload.MouseEnter:Connect(function()
+					profiledownload.BackgroundColor3 = Color3.fromRGB(5, 134, 105)
+				end)
+				profiledownload.MouseLeave:Connect(function()
+					profiledownload.BackgroundColor3 = Color3.fromRGB(31, 30, 31)
+				end)
+				profiledownload.MouseButton1Click:Connect(function()
+					writefile(customdir.."Profiles/"..v2["ProfileName"]..tostring(shared.CustomSaveVape or game.PlaceId)..".vapeprofile.txt", (shared.VapeDeveloper and readfile("vape/OnlineProfiles/"..v2["OnlineProfileName"]) or game:HttpGet("https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/main/OnlineProfiles/"..v2["OnlineProfileName"], true)))
+					GuiLibrary["Profiles"][v2["ProfileName"]] = {["Keybind"] = "", ["Selected"] = false}
+					local profiles = {}
+					for i,v in pairs(GuiLibrary["Profiles"]) do 
+						table.insert(profiles, i)
+					end
+					table.sort(profiles, function(a, b) return b == "default" and true or a:lower() < b:lower() end)
+					ProfilesTextList["RefreshValues"](profiles)
+				end)
+				local profileround = Instance.new("UICorner")
+				profileround.CornerRadius = UDim.new(0, 4)
+				profileround.Parent = profilebox
+				local profileround2 = Instance.new("UICorner")
+				profileround2.CornerRadius = UDim.new(0, 4)
+				profileround2.Parent = profiledownload
+				local profileround3 = Instance.new("UICorner")
+				profileround3.CornerRadius = UDim.new(0, 4)
+				profileround3.Parent = profiledownloadbkg
+			end
 		end
 		profilesloaded = true
 	end
@@ -990,25 +1013,25 @@ textguimode = TextGui.CreateDropdown({
 			onethingdrawing.Size = onething.AbsoluteSize
 			onethingdrawing.Position = onething.AbsolutePosition + Vector2.new(0, 36)
 			onethingdrawing.ZIndex = 2
-			onethingdrawing.Visible = onething.Visible
+			onethingdrawing.Visible = true
 			local onething2drawing = Drawing.new("Image")
 			onething2drawing.Data = readfile("vape/assets/VapeLogo4.png")
 			onething2drawing.Size = onething2.AbsoluteSize
 			onething2drawing.Position = onething2.AbsolutePosition + Vector2.new(0, 36)
 			onething2drawing.ZIndex = 2
-			onething2drawing.Visible = onething.Visible
+			onething2drawing.Visible = true
 			local onething3drawing = Drawing.new("Image")
 			onething3drawing.Data = readfile(translatedlogo and "vape/translations/"..GuiLibrary["Language"].."/VapeLogo3.png" or "vape/assets/VapeLogo3.png")
 			onething3drawing.Size = onething.AbsoluteSize
 			onething3drawing.Position = onething.AbsolutePosition + Vector2.new(1, 37)
 			onething3drawing.Transparency = 0.5
-			onething3drawing.Visible = onething.Visible and onething3.Visible
+			onething3drawing.Visible = onething3.Visible
 			local onething4drawing = Drawing.new("Image")
 			onething4drawing.Data = readfile("vape/assets/VapeLogo4.png")
 			onething4drawing.Size = onething2.AbsoluteSize
 			onething4drawing.Position = onething2.AbsolutePosition + Vector2.new(1, 37)
 			onething4drawing.Transparency = 0.5
-			onething4drawing.Visible = onething.Visible and onething3.Visible
+			onething4drawing.Visible = onething3.Visible
 			local onecustomdrawtext = Drawing.new("Text")
 			onecustomdrawtext.Size = 30
 			onecustomdrawtext.Text = onecustomtext.Text
@@ -1056,6 +1079,10 @@ textguimode = TextGui.CreateDropdown({
 				onecustomdrawtext.Position = onecustomtext.AbsolutePosition + Vector2.new(onetext.TextXAlignment == Enum.TextXAlignment.Right and (onecustomtext.AbsoluteSize.X - onecustomdrawtext.TextBounds.X), 32)
 				onecustomdrawtext2.Position = onecustomdrawtext.Position + Vector2.new(1, 1)
 			end))
+			table.insert(textguimodeconnections, onething:GetPropertyChangedSignal("Visible"):Connect(function()
+				onethingdrawing.Visible = onething.Visible
+				onething2drawing.Visible = onething.Visible
+			end))
 			table.insert(textguimodeconnections, onething3:GetPropertyChangedSignal("Visible"):Connect(function()
 				onething3drawing.Visible = onething3.Visible
 				onething4drawing.Visible = onething3.Visible
@@ -1065,12 +1092,6 @@ textguimode = TextGui.CreateDropdown({
 					textdraw.Visible = onetext2.Visible
 				end
 				onecustomdrawtext2.Visible = onecustomtext.Visible and onetext2.Visible
-			end))
-			table.insert(textguimodeconnections, onething:GetPropertyChangedSignal("Visible"):Connect(function()
-				onethingdrawing.Visible = onething.Visible
-				onething2drawing.Visible = onething.Visible
-				onething3drawing.Visible = onething.Visible and onetext2.Visible
-				onething4drawing.Visible = onething.Visible and onetext2.Visible
 			end))
 			table.insert(textguimodeconnections, onecustomtext:GetPropertyChangedSignal("Visible"):Connect(function()
 				onecustomdrawtext.Visible = onecustomtext.Visible
@@ -1410,12 +1431,13 @@ ModuleSettings.CreateToggle({
 								if ray.Instance:IsDescendantOf(v.Character) then 
 									local found = table.find(FriendsTextList["ObjectList"], v.Player.Name)
 									if not found then
-										table.insert(FriendsTextList["ObjectList"], v.Player.Name)
-										table.insert(FriendsTextList["ObjectListEnabled"], true)
+										local num = #FriendsTextList["ObjectList"] + 1
+										FriendsTextList["ObjectList"][num] = v.Player.Name
+										FriendsTextList["ObjectListEnabled"][num] = true
 										FriendsTextList["RefreshValues"](FriendsTextList["ObjectList"])
 									else
 										table.remove(FriendsTextList["ObjectList"], found)
-										table.remove(FriendsTextList["ObjectListEnabled"], found)
+										FriendsTextList["ObjectListEnabled"][found] = nil
 										FriendsTextList["RefreshValues"](FriendsTextList["ObjectList"])
 									end
 									break
@@ -1451,8 +1473,9 @@ local tabsortorder = {
 	["RenderButton"] = 3,
 	["UtilityButton"] = 4,
 	["WorldButton"] = 5,
-	["FriendsButton"] = 6,
-	["ProfilesButton"] = 7
+	["AzuraButton"] = 6,
+	["FriendsButton"] = 7,
+	["ProfilesButton"] = 8
 }
 
 local tabsortorder2 = {
@@ -1460,7 +1483,8 @@ local tabsortorder2 = {
 	[2] = "Blatant",
 	[3] = "Render",
 	[4] = "Utility",
-	[5] = "World"
+	[5] = "World",
+	[6] = "Azura"
 }
 
 local tabcategorycolor = {
@@ -1468,7 +1492,8 @@ local tabcategorycolor = {
 	["BlatantWindow"] = Color3.fromRGB(219, 21, 133),
 	["RenderWindow"] = Color3.fromRGB(135, 14, 165),
 	["UtilityWindow"] = Color3.fromRGB(27, 145, 68),
-	["WorldWindow"] = Color3.fromRGB(70, 73, 16)
+	["WorldWindow"] = Color3.fromRGB(70, 73, 16),
+	["AzuraWindow"] = Color3.fromRGB(0, 255, 255)
 }
 
 local function getSaturation(val)
@@ -1781,11 +1806,12 @@ GUISettings.CreateButton2({
 			["RenderWindow"] = 4,
 			["UtilityWindow"] = 5,
 			["WorldWindow"] = 6,
-			["FriendsWindow"] = 7,
-			["ProfilesWindow"] = 8,
-			["Text GUICustomWindow"] = 9,
-			["TargetInfoCustomWindow"] = 10,
-			["RadarCustomWindow"] = 11,
+			["AzuraWindow"] = 7,
+			["FriendsWindow"] = 8,
+			["ProfilesWindow"] = 9,
+			["Text GUICustomWindow"] = 10,
+			["TargetInfoCustomWindow"] = 11,
+			["RadarCustomWindow"] = 12,
 		}
 		local storedpos = {}
 		local num = 6
